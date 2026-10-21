@@ -25,6 +25,7 @@ jobs:
           docker run --rm -v "$PWD":/src -w /src semgrep/semgrep:latest semgrep scan \
             --config p/default --config p/nodejs --config p/secrets \
             --json --output reports/semgrep.json src || true
+          chmod -R a+r reports || true
 
       - name: Upload Semgrep Report
         uses: actions/upload-artifact@v4
@@ -52,6 +53,7 @@ jobs:
             --scanners vuln --ignore-unfixed \
             --format json --output /src/reports/trivy-fs.json /src
           npm audit --json > reports/npm-audit.json || true
+          chmod -R a+r reports || true
 
       - name: Upload SCA Reports
         uses: actions/upload-artifact@v4
@@ -76,6 +78,7 @@ jobs:
             --source /repo --config /repo/.gitleaks.toml \
             --report-format json --report-path /repo/reports/gitleaks.json \
             --exit-code 0
+          chmod -R a+r reports || true
 
       - name: Upload Gitleaks Report
         uses: actions/upload-artifact@v4
@@ -101,6 +104,7 @@ jobs:
             -v "$PWD/reports":/out aquasec/trivy:latest image \
             --ignore-unfixed --format json --output /out/trivy-image.json \
             demo-app:${{ github.sha }}
+          chmod -R a+r reports || true
 
       - name: Upload Container Report
         uses: actions/upload-artifact@v4
@@ -143,7 +147,7 @@ jobs:
   deploy:
     name: Secure AWS Deployment (ECR, Inspector, S3)
     needs: gate
-    if: github.ref == 'refs/heads/main' && needs.gate.result == 'success' && secrets.AWS_ROLE_TO_ASSUME != ''
+    if: github.ref == 'refs/heads/main' && needs.gate.result == 'success'
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -152,23 +156,40 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
+      - name: Check AWS Deployment Preconditions
+        id: aws_check
+        env:
+          AWS_ROLE: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+        run: |
+          if [ -z "$AWS_ROLE" ]; then
+            echo "enabled=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ AWS_ROLE_TO_ASSUME secret not set. Skipping live cloud push."
+            echo "Milestone 8 is documented as designed per hackathon submission guidelines."
+          else
+            echo "enabled=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Download Security Report Artifact
+        if: steps.aws_check.outputs.enabled == 'true'
         uses: actions/download-artifact@v4
         with:
           name: security-report
           path: out
 
       - name: Configure AWS Credentials via GitHub OIDC
+        if: steps.aws_check.outputs.enabled == 'true'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           aws-region: ${{ secrets.AWS_REGION || 'us-east-1' }}
 
       - name: Log in to Amazon ECR
+        if: steps.aws_check.outputs.enabled == 'true'
         uses: aws-actions/amazon-ecr-login@v2
         id: ecr
 
       - name: Build, Tag, and Push Hardened Image to ECR
+        if: steps.aws_check.outputs.enabled == 'true'
         run: |
           IMG=${{ steps.ecr.outputs.registry }}/demo-app:${{ github.sha }}
           docker build -t $IMG .
@@ -176,6 +197,7 @@ jobs:
           echo "Pushed image $IMG to ECR. Amazon Inspector automated scan triggered on push."
 
       - name: Upload Security Report to Amazon S3
+        if: steps.aws_check.outputs.enabled == 'true'
         run: |
           BUCKET=${{ secrets.AWS_S3_BUCKET || 'demo-security-reports-bucket' }}
           aws s3 cp out/report.html s3://$BUCKET/reports/${{ github.sha }}/report.html --sse AES256
