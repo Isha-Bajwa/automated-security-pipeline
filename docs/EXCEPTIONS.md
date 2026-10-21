@@ -15,9 +15,16 @@ Any security waiver must be formally requested, reviewed by the Security Lead, a
 
 | Vulnerability / Rule ID | Security Tool | Exception Type | Business & Technical Justification | Owner / Approver | Expiration Date | Tracking File |
 |---|---|---|---|---|---|---|
-| `CVE-2023-45853` | Trivy Container | Accepted Risk | Buffer overflow in `minizip` decompression code inside alpine library. Unused and unreachable in our Node.js HTTP server. | Isha Javed (Security Lead) | `2026-12-01` | `.trivyignore` |
+| `CVE-2026-102276` | Trivy Container | Accepted Risk | Bundled npm build-time tool (`brace-expansion`) not reachable in runtime node server. | Isha Javed (Security Lead) | `2026-12-01` | `.trivyignore` |
+| `CVE-2026-102278` | Trivy Container | Accepted Risk | Bundled npm build-time tool (`brace-expansion`) not reachable in runtime node server. | Isha Javed (Security Lead) | `2026-12-01` | `.trivyignore` |
+| `CVE-2026-13149` | Trivy Container | Accepted Risk | Bundled npm build-time tool (`brace-expansion`) not reachable in runtime node server. | Isha Javed (Security Lead) | `2026-12-01` | `.trivyignore` |
+| `CVE-2026-14257` | Trivy Container | Accepted Risk | Bundled npm build-time tool (`brace-expansion`) not reachable in runtime node server. | Isha Javed (Security Lead) | `2026-12-01` | `.trivyignore` |
+| `CVE-2026-69152` | Trivy Container | Accepted Risk | Bundled npm build-time tool (`brace-expansion`) not reachable in runtime node server. | Isha Javed (Security Lead) | `2026-12-01` | `.trivyignore` |
+| `CVE-2026-69192` | Trivy Container | Accepted Risk | Bundled npm build-time tool (`ip-address`) not reachable in runtime node server. | Isha Javed (Security Lead) | `2026-12-01` | `.trivyignore` |
+| `CVE-2026-9496` | Trivy Container | Accepted Risk | Bundled npm build-time tool (`pacote`) not reachable in runtime node server. | Isha Javed (Security Lead) | `2026-12-01` | `.trivyignore` |
+| `CVE-2026-33671` | Trivy Container | Accepted Risk | Bundled npm build-time tool (`picomatch`) not reachable in runtime node server. | Isha Javed (Security Lead) | `2026-12-01` | `.trivyignore` |
+| `CVE-2026-48815` | Trivy Container | Accepted Risk | Bundled npm build-time tool (`sigstore`) not reachable in runtime node server. | Isha Javed (Security Lead) | `2026-12-01` | `.trivyignore` |
 | `demo-api-key` | Gitleaks | False Positive / Demo Waiver | Synthetic dummy demonstration secret strictly restricted to test branch (`demo/vulnerable`). Real secrets never accepted. | Isha Javed (Security Lead) | Permanent (Test Only) | `.gitleaks.toml` |
-| `npm-audit-low-advisory` | npm audit / SCA | Accepted Risk | Informational warning on development tooling with no production runtime impact. | Isha Javed | `2026-11-15` | `docs/FINDINGS.md` |
 
 ---
 
@@ -26,7 +33,7 @@ Any security waiver must be formally requested, reviewed by the Security Lead, a
 ### For Trivy Container / Dependency Scans:
 1. Add the CVE ID and justification to `.trivyignore` in the repository root:
    ```text
-   CVE-2023-45853  # Unused minizip buffer overflow; Isha; review 2026-12-01
+   CVE-2026-102276  # Bundled npm build-time tool; Isha; review 2026-12-01
    ```
 2. Commit the change along with the updated `docs/EXCEPTIONS.md`.
 

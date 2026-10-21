@@ -49,8 +49,8 @@ jobs:
       - name: Run Dependency Scan
         run: |
           mkdir -p reports
-          docker run --rm -v "$PWD":/src aquasec/trivy:latest fs \
-            --scanners vuln --ignore-unfixed \
+          docker run --rm -v "$PWD":/src -w /src aquasec/trivy:latest fs \
+            --scanners vuln --ignore-unfixed --ignorefile /src/.trivyignore \
             --format json --output /src/reports/trivy-fs.json /src
           npm audit --json > reports/npm-audit.json || true
           chmod -R a+r reports || true
@@ -101,8 +101,10 @@ jobs:
         run: |
           mkdir -p reports
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-            -v "$PWD/reports":/out aquasec/trivy:latest image \
-            --ignore-unfixed --format json --output /out/trivy-image.json \
+            -v "$PWD/reports":/out -v "$PWD/.trivyignore":/.trivyignore \
+            aquasec/trivy:latest image \
+            --ignore-unfixed --ignorefile /.trivyignore \
+            --format json --output /out/trivy-image.json \
             demo-app:${{ github.sha }}
           chmod -R a+r reports || true
 

@@ -3,9 +3,10 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-# Install production dependencies only using deterministic lockfile
+# Install production dependencies only using deterministic lockfile and remove npm attack surface
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev && \
+    rm -rf /usr/local/lib/node_modules/npm /root/.npm
 
 # Copy application source code
 COPY src ./src

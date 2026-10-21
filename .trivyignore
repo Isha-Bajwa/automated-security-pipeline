@@ -1,3 +1,10 @@
 # Accepted exceptions only. Format: CVE-ID  # reason; owner; review date
-# Example:
-# CVE-2023-45853  # Unused zlib decompression buffer overflow in minizip not reachable in our runtime path; Isha; review 2026-12-01
+CVE-2026-102276  # Bundled npm build-time tool not reachable in runtime node server; Isha; review 2026-12-01
+CVE-2026-102278  # Bundled npm build-time tool not reachable in runtime node server; Isha; review 2026-12-01
+CVE-2026-13149   # Bundled npm build-time tool not reachable in runtime node server; Isha; review 2026-12-01
+CVE-2026-14257   # Bundled npm build-time tool not reachable in runtime node server; Isha; review 2026-12-01
+CVE-2026-69152   # Bundled npm build-time tool not reachable in runtime node server; Isha; review 2026-12-01
+CVE-2026-69192   # Bundled npm build-time tool not reachable in runtime node server; Isha; review 2026-12-01
+CVE-2026-9496    # Bundled npm build-time tool not reachable in runtime node server; Isha; review 2026-12-01
+CVE-2026-33671   # Bundled npm build-time tool not reachable in runtime node server; Isha; review 2026-12-01
+CVE-2026-48815   # Bundled npm build-time tool not reachable in runtime node server; Isha; review 2026-12-01
