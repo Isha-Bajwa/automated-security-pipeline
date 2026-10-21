@@ -1,0 +1,3 @@
+# Accepted exceptions only. Format: CVE-ID  # reason; owner; review date
+# Example:
+# CVE-2023-45853  # Unused zlib decompression buffer overflow in minizip not reachable in our runtime path; Isha; review 2026-12-01
